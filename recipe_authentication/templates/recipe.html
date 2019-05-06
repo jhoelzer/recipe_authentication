@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Recipes</title>
+</head>
+
+
+<body>
+    {% for item in recipes %}
+    <h1>{{item.title}}</h1>
+    <p><b>Description:</b> {{ item.description }}</p>
+    <p><b>Time Required:</b> {{ item.time_required }}</p>
+    <p><b>Instructions:</b> {{ item.instructions}}</p>
+
+
+    <p><b>Author:</b> <a href="/author/{{ item.author_id }}">"{{ item.author}}"</a></p>
+    
+
+    
+    {% endfor %}
+    
+
+</body>
+
+</html>
