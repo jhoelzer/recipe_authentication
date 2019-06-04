@@ -17,8 +17,15 @@
     
 
     
-    {% endfor %}
     
+    {% if user.is_authenticated %}
+    <a href="/favoritestat/{{ item.recipe_id }}" role="button">{{ fav_button }}</a>
+    {% endif %}
+
+    {% if show_edit_button %}
+    <a href="/recipeedit/{{ item.recipe_id }}" role="button">Update</a>
+    {% endif %}
+    {% endfor %}
 
 </body>
 

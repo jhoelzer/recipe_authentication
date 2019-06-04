@@ -5,7 +5,7 @@ from django.shortcuts import render, reverse, HttpResponseRedirect
 from recipe_authentication.models import Recipes, Author
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
-from recipe_authentication.forms import AuthorsForm, RecipesForm, LoginForm, SignupForm
+from recipe_authentication.forms import AuthorsForm, RecipesForm, LoginForm, SignupForm, RecipeEditForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -20,31 +20,72 @@ def index(request):
 def recipe_stuff(request, recipe_id):
     html = 'recipe.html'
     stuff = Recipes.objects.all().filter(id=recipe_id)
-    return render(request, html, {'recipes': stuff})
+    recipes = Recipes.objects.get(id=recipe_id)
+    current = request.user
+    fav_button = None
+    show_edit_button = None
+
+    if current.is_authenticated:
+        if request.user.author == recipes.author or current.is_staff:
+            show_edit_button = True
+        if recipes not in current.author.favorites.all():
+            fav_button = 'Favorite'
+        elif recipes in current.author.favorites.all():
+            fav_button = 'Un-Favorite'
+    else:
+        show_edit_button = False
+        return render(request, html, {'recipes': stuff, 'show_edit_button': show_edit_button})
+
+    return render(request, html, {'recipes': stuff, 'fav_button': fav_button, 'show_edit_button': show_edit_button})
+
+@login_required()
+def favorite_stat(request, recipe_id):
+    html = '../templates/favorite_stat.html'
+    is_favorite = False
+    current = request.user
+    recipe = Recipes.objects.filter(id=recipe_id).first()
+
+    if recipe not in current.author.favorites.get_queryset():
+        current.author.favorites.add(recipe)
+        is_favorite = True
+    else:
+        current.author.favorites.remove(recipe)
+        is_favorite = False
+
+    current.save()
+    return render(request, html, {'is_favorite': is_favorite})
 
 
 def author_stuff(request, author_id):
     html = "author.html"
     stuff = Recipes.objects.all().filter(id=author_id)
     author = Author.objects.all().filter(id=author_id)
-    return render(request, html, {'author': author, 'recipes': stuff})
+    favorites = author.first().favorites.get_queryset()
+    return render(request, html, {'author': author, 'recipes': stuff, 'favorites': favorites})
 
 
-# def signup_view(request):
+def signup_view(request):
 
-#     html = "signup.html"
+    html = "signup.html"
 
-#     form = SignupForm(None or request.POST)
-#     if form.is_valid():
-#         data = form.cleaned_data
-#         user = User.objects.create_user(
-#             data['username'], 
-#             data['email'], 
-#             data['password'])
-#         login(request, user)
-#         Author.objects.create(name=user.username, user=user)
+    form = None
 
-#         return HttpResponseRedirect(reverse('homepage'))
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+
+        if form.is_valid():
+            data = form.cleaned_data
+            user = User.objects.create_user(
+                data['username'], 
+                data['email'], 
+                data['password'])
+            login(request, user)
+            Author.objects.create(name=user.username, user=user)
+
+            return HttpResponseRedirect(reverse('homepage'))
+    else:
+        form = SignupForm()
+    return render(request, html, {'form': form})
     
         
 
@@ -104,6 +145,29 @@ def add_recipe(request):
         
     return render(request, html, {"form": form})
 
+
+@login_required()
+def recipe_edit(request, recipe_id):
+    html = 'recipe_edit.html'
+    form = None
+    current = User.objects.get(id=request.user.author_id)
+    current_recipe = Recipe.objects.get(id=recipe_id)
+    data = { 'title': current_recipe.title, 'description': current_recipe.description, 'time_req': current_recipe.time_req, 'instructions': current_recipe.instructions}
+
+    if request.method == 'POST':
+        form = RecipeEditForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            current_recipe.title = data['title']
+            current_recipe.description = data['description']
+            current_recipe.time_req = data['time_req']
+            current_recipe.instructions = data['instructions']
+            current_recipe.save()
+            return render(request, 'edited.html', {'current_recipe': current_recipe})
+    else:
+        form = RecipeEditForm(initial=data)
+    
+    return render(request, html, {'form': form})
 
 def login_view(request):
     html = 'login_view.html'

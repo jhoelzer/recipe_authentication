@@ -21,8 +21,6 @@ from django.urls import path
 from recipe_authentication.models import Author, Recipes
 from recipe_authentication import views
 
-admin.site.register(Author)
-admin.site.register(Recipes)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,4 +33,6 @@ urlpatterns = [
     path('recipes/<int:recipe_id>/', views.recipe_stuff),
     path('addrecipe/', views.add_recipe),
     path('addauthor/', views.add_author),
+    path('recipeedit/<int:recipe_id>/', views.recipe_edit),
+    path('favoritestat/<int:recipe_id>/', views.favorite_stat)
 ]

@@ -19,6 +19,19 @@
         </li>
     </ul>
     {% endfor %}
+    <br>
+    <h2>My Favorites:</h2>
+    {% if not favorites %}
+    <p>No favorites</p>
+    {% else %}
+    {% for fav in favorites %}
+    <ul>
+        <li>
+            <a href="/recipe/{{ fav.id }}">{{ fav.title }}</a>
+        </li>
+    </ul>
+    {% endfor %}
+    {% endif  %}
 
     <a href="/">Click to return to HomePage</a>
     
