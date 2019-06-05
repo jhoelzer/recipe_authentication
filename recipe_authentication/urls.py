@@ -29,10 +29,10 @@ urlpatterns = [
     path('login/', views.login_view),
     path('logout/', views.logout_view),
     path('signup/', views.signup_view),
-    path('author/<int:author_id>/', views.author_stuff),
-    path('recipes/<int:recipe_id>/', views.recipe_stuff),
+    path('author/<int:id>/', views.author_stuff),
+    path('recipes/<int:id>/', views.recipe_stuff),
     path('addrecipe/', views.add_recipe),
     path('addauthor/', views.add_author),
-    path('recipeedit/<int:recipe_id>/', views.recipe_edit),
-    path('favoritestat/<int:recipe_id>/', views.favorite_stat)
+    path('recipeedit/<int:id>/', views.recipe_edit),
+    path('favoritestat/<int:id>/', views.favorite_stat)
 ]

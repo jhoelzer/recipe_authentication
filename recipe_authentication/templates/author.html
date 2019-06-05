@@ -11,32 +11,38 @@
     <p><b>My Story:</b>  
     {{ item.bio }}</p>
     {% endfor %}
+
     <h2>My Recipes:</h2>
+    {% if not recipes %}
+    <p>No recipes by this author</p>
+
+    {% else %}
     {% for rec in recipes %}
     <ul>
         <li>
-            <a href="/recipes/{{ rec.id }}">{{ rec.title }}</a>
+            <a href='/recipes/{{ rec.id }}'>{{ rec.title }}</a>
         </li>
     </ul>
     {% endfor %}
+    {% endif %}
     <br>
+
     <h2>My Favorites:</h2>
     {% if not favorites %}
     <p>No favorites</p>
+
     {% else %}
     {% for fav in favorites %}
     <ul>
         <li>
-            <a href="/recipe/{{ fav.id }}">{{ fav.title }}</a>
+            <a href="/recipes/{{ fav.id }}">{{ fav.title }}</a>
         </li>
     </ul>
     {% endfor %}
     {% endif  %}
 
     <a href="/">Click to return to HomePage</a>
-    
 
 </body>
-
 
 </html>

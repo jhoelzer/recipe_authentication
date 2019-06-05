@@ -1,4 +1,10 @@
+{% for rec in recipe %}
+<p>{{ rec }}</p>
+{% endfor %}
+
 <h1>Edit Recipe</h1>
 <form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
     <input type="submit" value="Submit">
 </form>

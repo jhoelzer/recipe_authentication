@@ -17,10 +17,10 @@ def index(request):
     return render(request, html, {'recipes': stuff})
 
 
-def recipe_stuff(request, recipe_id):
+def recipe_stuff(request, id):
     html = 'recipe.html'
-    stuff = Recipes.objects.all().filter(id=recipe_id)
-    recipes = Recipes.objects.get(id=recipe_id)
+    stuff = Recipes.objects.all().filter(id=id)
+    recipes = Recipes.objects.get(id=id)
     current = request.user
     fav_button = None
     show_edit_button = None
@@ -39,11 +39,11 @@ def recipe_stuff(request, recipe_id):
     return render(request, html, {'recipes': stuff, 'fav_button': fav_button, 'show_edit_button': show_edit_button})
 
 @login_required()
-def favorite_stat(request, recipe_id):
+def favorite_stat(request, id):
     html = '../templates/favorite_stat.html'
     is_favorite = False
     current = request.user
-    recipe = Recipes.objects.filter(id=recipe_id).first()
+    recipe = Recipes.objects.filter(id=id).first()
 
     if recipe not in current.author.favorites.get_queryset():
         current.author.favorites.add(recipe)
@@ -56,10 +56,10 @@ def favorite_stat(request, recipe_id):
     return render(request, html, {'is_favorite': is_favorite})
 
 
-def author_stuff(request, author_id):
+def author_stuff(request, id):
     html = "author.html"
-    stuff = Recipes.objects.all().filter(id=author_id)
-    author = Author.objects.all().filter(id=author_id)
+    stuff = Recipes.objects.all().filter(id=id)
+    author = Author.objects.all().filter(id=id)
     favorites = author.first().favorites.get_queryset()
     return render(request, html, {'author': author, 'recipes': stuff, 'favorites': favorites})
 
@@ -147,11 +147,11 @@ def add_recipe(request):
 
 
 @login_required()
-def recipe_edit(request, recipe_id):
+def recipe_edit(request, id):
     html = 'recipe_edit.html'
     form = None
-    current = User.objects.get(id=request.user.author_id)
-    current_recipe = Recipe.objects.get(id=recipe_id)
+    current = User.objects.get(id=request.user.id)
+    current_recipe = Recipes.objects.get(id=id)
     data = { 'title': current_recipe.title, 'description': current_recipe.description, 'time_req': current_recipe.time_req, 'instructions': current_recipe.instructions}
 
     if request.method == 'POST':
